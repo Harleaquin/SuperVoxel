@@ -84,6 +84,7 @@ public class SuperVoxel implements ApplicationListener {
 
 	@Override
 	public void pause() {
+		
 	}
 
 	@Override
