@@ -1,4 +1,4 @@
-package de.superdau.voxel.chunk;
+package de.superdau.voxel.octree;
 
 import java.util.LinkedList;
 import java.util.List;

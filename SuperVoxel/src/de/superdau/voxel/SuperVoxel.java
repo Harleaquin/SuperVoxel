@@ -7,9 +7,10 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import de.superdau.voxel.chunk.OctreeModel;
 
-//testcomment
+import de.superdau.voxel.octree.OctreeModel;
+
+
 public class SuperVoxel implements ApplicationListener {
 	private PerspectiveCamera camera;
 	private Vector3 camPos;
