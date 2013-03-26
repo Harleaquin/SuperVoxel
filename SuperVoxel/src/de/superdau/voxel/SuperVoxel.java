@@ -77,14 +77,7 @@ public class SuperVoxel implements ApplicationListener {
 	    gl.glPopMatrix();
 	}
 	
-	public static void rotate(Vector2 v, Vector2 o, float angleDeg) {
-		   float cos = MathUtils.cosDeg(angleDeg);
-		   float sin = MathUtils.sinDeg(angleDeg);
-		   float x = v.x;
-		   float y = v.y;
-		   v.x = cos*(x-o.x) - sin*(y-o.y) + o.x;
-		   v.y = sin*(x-o.x) + cos*(y-o.y) + o.y;
-		 }
+
 	
 	@Override
 	public void resize(int width, int height) {
