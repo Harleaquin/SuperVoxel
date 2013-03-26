@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 import de.superdau.voxel.meshzeugs.CubeMask;
 import de.superdau.voxel.textur.TextureHelper;
 
-public class OctreeModel {
+public class OctreeTests {
 	private OctreeNodeInterface rootNode;
 	private int MAXDEPTH;
 
@@ -20,7 +20,17 @@ public class OctreeModel {
 	private double maxAchse;
 	private double maxNodes;
 	
-	public OctreeModel(int maxdepth){
+	
+	public OctreeTests(){
+		this.MAXDEPTH=5;
+		this.rootNode=this.flatlandOctree();
+		System.out.println("asdf");
+		//treeWalk(rootNode);
+		th = new TextureHelper();
+		CubeMask.getInstance();
+	}
+	
+	public OctreeTests(int maxdepth){
 	 this.MAXDEPTH=maxdepth;
 	 rootNode=recOctreeFull(0);
 	 maxDepth=getMaxDepth(rootNode);
@@ -46,13 +56,6 @@ public class OctreeModel {
 			if (node.isEmpty()==false) {
 				int maske=63;
 				
-				//if (v.x==0 && node.getSister(1, (int) v.y, (int) v.z).isEmpty()==false) maske-=2;
-				//if (v.x==1 && node.getSister(0, (int) v.y, (int) v.z).isEmpty()==false) maske-=8;
-				//if (v.z==0 && node.getSister((int) v.x, (int) v.y, 1).isEmpty()==false) maske-=4;
-				//if (v.z==1 && node.getSister((int) v.x, (int) v.y, 0).isEmpty()==false) maske-=1;
-				//if (v.y==0 && node.getSister((int) v.x, 1, (int) v.z).isEmpty()==false) maske-=16;
-				//if (v.y==1 && node.getSister((int) v.x, 0, (int) v.z).isEmpty()==false) maske-=32;
-				
 				Vector3 vg=node.globalVector();
 				if (vg.x<maxAchse-1 && this.getNodeAt(rootNode, vg.x+1, vg.y, vg.z).isEmpty()==false) maske-=2;
 				if (vg.x>0 && this.getNodeAt(rootNode, vg.x-1, vg.y, vg.z).isEmpty()==false) maske-=8;
@@ -67,7 +70,6 @@ public class OctreeModel {
 			}
 		}
 		else {
-			//if (v.x==0 && node.getSister(1, (int) v.y, (int) v.z).isEmpty()==false) 
 			for (OctreeNodeInterface child:node.getChildNodes()) {
 				removeHiddenMeshes(child);
 			}
@@ -103,11 +105,13 @@ public class OctreeModel {
 	}
 	
 	public void treeWalk(OctreeNodeInterface node){
+		System.out.print(".");
 		if (node.isLeaf()) {
 			if (node.isEmpty()==false) System.out.println(node.toString());
 		}
 		else {
 			for (OctreeNodeInterface child:node.getChildNodes()){
+				System.out.print("f");
 				treeWalk(child);
 			}
 		}
@@ -128,7 +132,11 @@ public class OctreeModel {
 		return rootNode;
 	}
 	
-	public int getMaxDepth(OctreeNodeInterface node){
+	public int getMaxDepth(){
+		return getMaxDepth(rootNode);
+	}
+	
+	private int getMaxDepth(OctreeNodeInterface node){
 		OctreeNodeInterface tempNode=node;
 		int depth;
 		if (tempNode.isLeaf()) return tempNode.getDepth();
@@ -147,6 +155,7 @@ public class OctreeModel {
 		if (depth>=MAXDEPTH) {
 		 tempNode.setBitmask(63);
 		 tempNode.setTextur((int) (Math.random()*4));
+		 System.out.print("-");
 		}
 		else {
 		 List<OctreeNodeInterface> children=new LinkedList<OctreeNodeInterface>();	
@@ -201,6 +210,31 @@ public class OctreeModel {
 		 tempNode.setChildNodes(children);
 		}
 		 return tempNode;
+	}
+	
+	public OctreeNodeInterface emptyNode(int depth){
+		OctreeNodeInterface tempNode = new OctreeNode(0);
+		tempNode.setEmpty(true);
+		tempNode.setDepth(depth);
+		tempNode.setLeaf(true);
+		return tempNode;
+	}
+	
+	public OctreeNodeInterface flatlandOctree(){
+		OctreeNodeInterface tempNode = new OctreeNode(0);
+		List<OctreeNodeInterface> children=new LinkedList<OctreeNodeInterface>();	
+		
+		children.add(recOctreeFull(1));
+		children.add(recOctreeFull(1));
+		children.add(emptyNode(1));
+		children.add(emptyNode(1));
+		children.add(recOctreeFull(1));
+		children.add(recOctreeFull(1));
+		children.add(emptyNode(1));
+		children.add(emptyNode(1));
+		 
+		 tempNode.setChildNodes(children);
+		return tempNode;
 	}
 	
 }

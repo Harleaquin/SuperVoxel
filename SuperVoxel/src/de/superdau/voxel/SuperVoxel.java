@@ -3,46 +3,24 @@ package de.superdau.voxel;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-import de.superdau.voxel.octree.OctreeModel;
+import de.superdau.voxel.actor.Actor;
+import de.superdau.voxel.octree.OctreeTests;
 
 
 public class SuperVoxel implements ApplicationListener {
-	private PerspectiveCamera camera;
-	private Vector3 camPos;
-    private float winkel=0;
-    private float abstand=3;
-    private OctreeModel octreeModel;
+
+    private OctreeTests octreeModel;
+    private Actor actor;
 	
 	@Override
 	public void create() {		
-		octreeModel=new OctreeModel(2);
-		octreeModel.getNodeAt(octreeModel.getRootNode(), 3, 3, 3).setEmpty(true);
-		octreeModel.getNodeAt(octreeModel.getRootNode(), 3, 2, 3).setEmpty(true);
-		octreeModel.getNodeAt(octreeModel.getRootNode(), 3, 3, 2).setEmpty(true);
-		octreeModel.getNodeAt(octreeModel.getRootNode(), 2, 3, 3).setEmpty(true);
-		octreeModel.getNodeAt(octreeModel.getRootNode(), 0, 0, 0).setEmpty(true);
-		octreeModel.getNodeAt(octreeModel.getRootNode(), 0, 1, 0).setEmpty(true);
-		octreeModel.getNodeAt(octreeModel.getRootNode(), 0, 0, 1).setEmpty(true);
-		octreeModel.getNodeAt(octreeModel.getRootNode(), 1, 0, 0).setEmpty(true);
+		octreeModel=new OctreeTests();
 		octreeModel.removeHiddenMeshes();
-		
-		float w = Gdx.graphics.getWidth();
-		float h = Gdx.graphics.getHeight();
-		
-		camera =new PerspectiveCamera(67, 2f * (w/h), 2f);
-		
-		float dx = MathUtils.sinDeg(winkel)*abstand;
-		float dy = MathUtils.cosDeg(winkel)*abstand;
-		
-		camPos=new Vector3(dx,0,dy);
-		//System.out.println(camPos.toString());
-		camera.translate(camPos);
-		camera.lookAt(0, 0, 0);
+		System.out.println(Math.pow(2, octreeModel.getMaxDepth()));
+		actor=new Actor(new Vector3(5,16,5), new Vector3(16,16,16));
+		Gdx.input.setInputProcessor(actor);
 	}
 
 	@Override
@@ -50,14 +28,7 @@ public class SuperVoxel implements ApplicationListener {
 		//texture.dispose();
 	}
 
-	private void cameraSchwenk(){
-		winkel+=1;
-		float dx = MathUtils.sinDeg(winkel)*abstand;
-		float dy = MathUtils.cosDeg(winkel)*abstand;
-		Vector3 newCamPos=new Vector3(dx,5*MathUtils.cos(winkel/(40*MathUtils.PI)),dy);
-		camera.translate(newCamPos.sub(camera.position));
-		camera.lookAt(0, 0, 0);
-	}
+	
 	
 	@Override
 	public void render() {		
@@ -68,9 +39,9 @@ public class SuperVoxel implements ApplicationListener {
 		gl.glEnable(GL10.GL_TEXTURE_2D);
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_NEAREST);
 		
-		cameraSchwenk();
-		camera.update();
-	    camera.apply(gl);
+		actor.getCamera().update();
+		actor.getCamera().apply(gl);
+		actor.render(gl);
 	    gl.glPushMatrix();
 	    	octreeModel.render(gl);
 	    gl.glPopMatrix();

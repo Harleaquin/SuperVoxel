@@ -88,7 +88,7 @@ public class OctreeNode implements OctreeNodeInterface{
 		this.bitmask=value;
 		this.setEmpty(false);
 		this.setLeaf(true);
-		System.out.println("Value: "+this.bitmask+" Depth: "+this.depth);
+		//System.out.println("Value: "+this.bitmask+" Depth: "+this.depth);
 	}
 
 	@Override
