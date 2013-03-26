@@ -79,6 +79,7 @@ public class SuperVoxel implements ApplicationListener {
 	
 	@Override
 	public void resize(int width, int height) {
+		
 	}
 
 	@Override
