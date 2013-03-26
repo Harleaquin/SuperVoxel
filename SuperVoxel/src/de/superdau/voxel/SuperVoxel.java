@@ -68,10 +68,8 @@ public class SuperVoxel implements ApplicationListener {
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_NEAREST);
 		
 		cameraSchwenk();
-
 		camera.update();
 	    camera.apply(gl);
-	    
 	    gl.glPushMatrix();
 	    	octreeModel.render(gl);
 	    gl.glPopMatrix();
