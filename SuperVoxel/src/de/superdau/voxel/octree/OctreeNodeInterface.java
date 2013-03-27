@@ -28,4 +28,5 @@ public interface OctreeNodeInterface {
 	public int getTextur();
 	public void setTextur(int value);
 	
+	public int getMaxDepth();
 }

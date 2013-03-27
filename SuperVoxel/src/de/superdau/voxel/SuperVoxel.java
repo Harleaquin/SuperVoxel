@@ -17,9 +17,11 @@ public class SuperVoxel implements ApplicationListener {
 	@Override
 	public void create() {		
 		octreeModel=new OctreeTests();
-		octreeModel.removeHiddenMeshes();
-		System.out.println(Math.pow(2, octreeModel.getMaxDepth()));
-		actor=new Actor(new Vector3(5,16,5), new Vector3(16,16,16));
+		System.out.println("removing hidden meshes");
+		octreeModel.removeHiddenMeshesSimple();
+		System.out.println("finished removing");
+		float hoehe=(float) Math.pow(2, octreeModel.getMaxDepth())/2;
+		actor=new Actor(new Vector3(hoehe,hoehe,hoehe), new Vector3(2*hoehe,hoehe,2*hoehe));
 		Gdx.input.setInputProcessor(actor);
 	}
 
@@ -38,12 +40,14 @@ public class SuperVoxel implements ApplicationListener {
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		gl.glEnable(GL10.GL_TEXTURE_2D);
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_NEAREST);
+		gl.glEnable(GL10.GL_CULL_FACE);
+		gl.glCullFace(GL10.GL_BACK);
 		
 		actor.getCamera().update();
 		actor.getCamera().apply(gl);
 		actor.render(gl);
 	    gl.glPushMatrix();
-	    	octreeModel.render(gl);
+	    	octreeModel.render(gl,actor);
 	    gl.glPopMatrix();
 	}
 	

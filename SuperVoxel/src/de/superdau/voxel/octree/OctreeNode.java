@@ -9,6 +9,8 @@ public class OctreeNode implements OctreeNodeInterface{
 	private boolean empty;
     private boolean leaf;
     private int depth;
+    private static int maxDepth;
+    
     private List<OctreeNodeInterface> childNodes;
     private List<OctreeNodeInterface> sisterNodes;
     private OctreeNodeInterface mother;
@@ -21,8 +23,7 @@ public class OctreeNode implements OctreeNodeInterface{
     	this.empty=true;
     	this.leaf=true;
     	this.depth=depth;
-    	this.bitmask=63;
-    	this.textur=0;
+    	if (this.depth>maxDepth) maxDepth=depth;
     }
     
 	@Override
@@ -132,7 +133,7 @@ public class OctreeNode implements OctreeNodeInterface{
 	public Vector3 globalVector(){
 		OctreeNodeInterface node = this;
 		Vector3 vec = new Vector3(0,0,0);
-		int multi=1;
+		int multi=1; 
 		while (node.getDepth()>0){
 			Vector3 newVec = node.localVector().mul(multi);
 			vec.add(newVec);
@@ -163,6 +164,11 @@ public class OctreeNode implements OctreeNodeInterface{
 	@Override
 	public void setTextur(int value) {
 		this.textur=value;
+	}
+
+	@Override
+	public int getMaxDepth() {
+		return OctreeNode.maxDepth;
 	}
 
 

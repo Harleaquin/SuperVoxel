@@ -5,21 +5,26 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Frustum;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
 import de.superdau.voxel.meshzeugs.CubeMask;
+import de.superdau.voxel.textur.TextureHelper;
 
 public class Actor implements InputProcessor{
 	private Camera camera;
 	private Vector3 position;
 	private Vector3 lookAt;
-	
+	private Texture texture;
 	
 	public Actor(){
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
 		this.camera =new PerspectiveCamera(67, 2f * (w/h), 2f);
+		TextureHelper th = new TextureHelper();
+		this.texture=th.getTexture(0);
 	}
 	
 	public Actor(Vector3 position, Vector3 lookat){
@@ -29,6 +34,7 @@ public class Actor implements InputProcessor{
 		camera.translate(this.getPosition());
 		camera.translate(-2,1,-2);
 		camera.lookAt(lookat.x, lookat.y, lookat.z);
+		camera.far=20;
 	}
 	
 	public Camera getCamera(){
@@ -62,9 +68,14 @@ public class Actor implements InputProcessor{
 	public void render(GL10 gl){
 		gl.glPushMatrix();
 		 gl.glTranslatef(position.x, position.y, position.z);
+		 texture.bind();
 		 CubeMask.getMesh((byte) 63).render(GL10.GL_TRIANGLES);
 		 gl.glTranslatef(-position.x, -position.y, -position.z); 
 		gl.glPopMatrix();
+	}
+	
+	public Frustum getFrustum(){
+		return camera.frustum;
 	}
 
 	@Override
