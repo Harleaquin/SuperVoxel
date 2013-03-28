@@ -22,16 +22,18 @@ public class OctreeTests {
 	private double maxAchse;
 	private double maxNodes;
 	
+	private double counter=0;
+	
 	
 	public OctreeTests(){
-		this.MAXDEPTH=8;
+		this.MAXDEPTH=5;
 		System.out.println("filling");
 		this.rootNode=this.flatlandOctree();
 		System.out.println("\nfinished filling");
 		//treeWalk(rootNode);
 		th = new TextureHelper();
 		CubeMask.getInstance();
-		getNodeAt(rootNode,16,15,16).setEmpty(true);
+		//getNodeAt(rootNode,16,15,16).setEmpty(true);
 	}
 	
 	public OctreeTests(int maxdepth){
@@ -108,50 +110,18 @@ public class OctreeTests {
 	public void render3Depth(GL10 gl, Actor actor){
 		
 	}
-	
-	public void renderFaster(GL10 gl, Actor actor){
-		Vector3 v = actor.getPosition();
-		OctreeNodeInterface startingnode=this.getNodeAt(rootNode, v.x, v.y-1, v.z);
-		
-		Vector3 pivot = new Vector3(v.x, v.y-1, v.z);
-	while(actor.getFrustum().sphereInFrustum(pivot, 1));
-		renderNeighbours(startingnode,gl,actor,pivot);
-		OctreeNodeInterface mother= startingnode.getMother();
-		Vector3 m = mother.localVector();
-		///baustelle
-	}
-	
-	public void renderNeighbours(OctreeNodeInterface node, GL10 gl, Actor actor, Vector3 pivot){
-		Vector3 local=node.localVector();
-		for (int x=0;x<=1;x++)
-			for (int y=0;y<=1;y++)
-				for (int z=0;z<=1;z++) {
-					OctreeNodeInterface sister=node.getSister(x, y, z);
-					Vector3 r = new Vector3(pivot.x+x-local.x,pivot.y+y-local.y,pivot.z+z-local.z);
-					
-					if (sister.isEmpty()==false && sister.getBitmask()>0) {
-					Mesh mesh=CubeMask.getMesh((byte) (sister.getBitmask()));
-					gl.glTranslatef(r.x,r.y,r.z);
-					gl.glPushMatrix();
-						th.getTexture(sister.getTextur()).bind();
-						mesh.render(GL10.GL_TRIANGLES); 
-					gl.glPopMatrix();
-					gl.glTranslatef(-r.x,-r.y,-r.z);
-					System.out.println("rendering noda at: "+r.toString());
-					}
-				}
-		
-	}
-	
+
 	public void render(GL10 gl, Actor actor){
+		//counter=0;
 		renderWalk(rootNode,gl,actor);
+		//System.out.println("Voxels gemalt: "+counter);
 	}
 	
 	public void renderWalk(OctreeNodeInterface node, GL10 gl, Actor actor){
 		if (node.isLeaf()) {
 			if (node.isEmpty()==false && node.getBitmask()>0) {
 				Vector3 vec = new Vector3(node.globalVector());
-				if (actor.getFrustum().sphereInFrustum(vec, 1)) {
+				
 					Mesh mesh=CubeMask.getMesh((byte) (node.getBitmask()));
 					mesh.bind();
 					gl.glTranslatef(vec.x, vec.y, vec.z);
@@ -160,11 +130,13 @@ public class OctreeTests {
 						mesh.render(GL10.GL_TRIANGLES); 
 					gl.glPopMatrix();
 					gl.glTranslatef(-vec.x, -vec.y, -vec.z);
-				}
+					counter++;
+				
 			}
 		}
 		else {
 			for (OctreeNodeInterface child:node.getChildNodes()){
+				if (actor.getFrustum().boundsInFrustum(child.getBoundingBox()))
 				renderWalk(child,gl,actor);
 			}
 		}
@@ -186,16 +158,16 @@ public class OctreeTests {
 	public OctreeNodeInterface getNodeAt(OctreeNodeInterface node, double x, double y, double z){
 		int dx=1,dy=1,dz=1;
 		double maxDepth=Math.pow(2, getMaxDepth()-node.getDepth());
-		System.out.println("lala: "+maxDepth);
+		//System.out.println("lala: "+maxDepth);
 		if (x<maxDepth/2) dx=0;
 		if (y<maxDepth/2) dy=0;
 		if (z<maxDepth/2) dz=0;
 		OctreeNodeInterface nextNode=node.getChild(dx, dy, dz);
-		System.out.println("lala: "+nextNode.toString());
+		//System.out.println("lala: "+nextNode.toString());
 		if (nextNode.isLeaf()) return nextNode;
 		else return getNodeAt(nextNode,x-dx*maxDepth/2,y-dy*maxDepth/2,z-dz*maxDepth/2);
 	}
-	
+		
 	
 	public OctreeNodeInterface getRootNode(){
 		return rootNode;

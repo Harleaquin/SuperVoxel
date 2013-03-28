@@ -3,6 +3,7 @@ package de.superdau.voxel.octree;
 import java.util.List;
 
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 
 public interface OctreeNodeInterface {
 	public boolean isEmpty();
@@ -29,4 +30,5 @@ public interface OctreeNodeInterface {
 	public void setTextur(int value);
 	
 	public int getMaxDepth();
+	public BoundingBox getBoundingBox();
 }

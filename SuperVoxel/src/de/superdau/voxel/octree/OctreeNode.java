@@ -3,6 +3,7 @@ package de.superdau.voxel.octree;
 import java.util.List;
 
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 
 public class OctreeNode implements OctreeNodeInterface{
 
@@ -17,6 +18,8 @@ public class OctreeNode implements OctreeNodeInterface{
     
     private int bitmask;
     private int textur;
+    
+    private Vector3 globalOrigin;
     
     public OctreeNode(int depth){
     	this.mother=null;
@@ -131,16 +134,26 @@ public class OctreeNode implements OctreeNodeInterface{
 	
 	@Override
 	public Vector3 globalVector(){
-		OctreeNodeInterface node = this;
-		Vector3 vec = new Vector3(0,0,0);
-		int multi=1; 
-		while (node.getDepth()>0){
-			Vector3 newVec = node.localVector().mul(multi);
-			vec.add(newVec);
-			multi*=2;
-			node=node.getMother();
+		return globalVectorIntern();
+	}
+	
+	private Vector3 globalVectorIntern(){
+		if (globalOrigin!=null) {
+			return this.globalOrigin;
 		}
-		return vec;
+		else {
+			OctreeNodeInterface node = this;
+			Vector3 vec = new Vector3(0,0,0);
+			int multi=1; 
+			while (node.getDepth()>0){
+				Vector3 newVec = node.localVector().mul(multi);
+				vec.add(newVec);
+				multi*=2;
+				node=node.getMother();
+			}
+			this.globalOrigin=vec.cpy();
+			return this.globalOrigin;
+		}
 	}
 	
 	@Override
@@ -169,6 +182,14 @@ public class OctreeNode implements OctreeNodeInterface{
 	@Override
 	public int getMaxDepth() {
 		return OctreeNode.maxDepth;
+	}
+
+	@Override
+	public BoundingBox getBoundingBox() {
+		Vector3 min = globalVector();
+		double size = Math.pow(2, (this.maxDepth-this.depth));
+		Vector3 max = min.cpy().add(1, 1, 1).mul((float) size);
+		return new BoundingBox(min,max);
 	}
 
 
